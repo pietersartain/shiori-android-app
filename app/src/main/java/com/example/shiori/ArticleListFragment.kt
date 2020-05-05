@@ -33,7 +33,6 @@ class ArticleListFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this.context)
 
         view.findViewById<Button>(R.id.button_settings).setOnClickListener {
-//            findNavController().navigate(R.id.action_FirstFragment_to_settingsFragment)
             view ->
             Snackbar.make(view,
 //                "Replace with your own action",

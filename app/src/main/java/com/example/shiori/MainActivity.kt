@@ -21,32 +21,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        /* lambda expression type.
-         * I think what we're doing is converting fab to view.
-         * The first line view captures "this" as "view", then passes that into Snackbar.make()
-         * Once we've got a Snackbar::view, we call .setAction.show() on it, to do a thing.
-         */
-//        val text = "None"
-//        fab.setOnClickListener { view ->
-//            Snackbar.make(view,
-////                "Replace with your own action",
-//                text,
-//                Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
-
-        /* Partly unrolled function?
-         *
-         */
-//        val text = onActionButtonClick()
-//        val view = Snackbar.make(fab,
-//            text,
-//            Snackbar.LENGTH_LONG)
-//
-//        fab.setOnClickListener {
-//            view.setAction("Action", null).show()
-//        }
-
         /* Function hook for
          *
          */
@@ -54,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             onActionButtonClickDoTheThings()
         }
 
-//        action_settings.setOnClickListener {}
+        doLogin()
 
     }
 
@@ -70,29 +44,22 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings ->
-
-//            Somewhere else
-//            {
-//                toolbar.ctx.startActivity<SettingsActivity>()
-//                true
-//            }
-
-//                Transition to a new Activity
-                {
+             {
+//              Transition to the SettingsActivity
                 val intent = Intent(this.applicationContext, SettingsActivity::class.java )
                 startActivity(intent)
                 true
-                }
-
-//                Load a new screen
-//                {
-//                setContentView(R.layout.settings_activity)
-//                true
-//                }
-
+             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    fun doLogin(): Boolean {
+
+        return true
+    }
+
+
 
     fun onActionButtonClick(): String {
 //        val textView = findViewById<TextView>(R.id.text)
