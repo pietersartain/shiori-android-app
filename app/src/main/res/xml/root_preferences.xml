@@ -1,0 +1,30 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Settings">
+        <EditTextPreference
+            app:key="server"
+            app:title="Server URL"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="username"
+            app:title="Username"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="passwd"
+            app:title="Password"
+            app:useSimpleSummaryProvider="true" />
+
+<!--        TODO: test button -->
+<!--        <Preference-->
+<!--            app:title="Display webview via intent"-->
+<!--            app:dependency="server" >-->
+
+<!--            <intent app:action="android.intent.action.VIEW"-->
+<!--                app:data="http://codepath.com/" />-->
+<!--        </Preference>-->
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

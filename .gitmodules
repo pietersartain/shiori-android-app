@@ -1,0 +1,3 @@
+[submodule "app/libs/volley"]
+	path = app/libs/volley
+	url = https://github.com/google/volley
