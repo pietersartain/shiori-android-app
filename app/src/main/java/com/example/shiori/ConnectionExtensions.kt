@@ -7,19 +7,15 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.ImageLoader
 import com.android.volley.toolbox.Volley
-import java.sql.Connection
 
-class ConnectionExtensions constructor(context: Context) {
-    companion object {
-        @Volatile
-        private var INSTANCE: ConnectionExtensions? = null
-        fun getInstance(context: Context) =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: ConnectionExtensions(context).also {
-                    INSTANCE = it
-                }
-            }
+class ConnectionExtensions private constructor(context: Context) {
+
+    init {
+        // Init using context argument
     }
+
+    companion object : SingletonHolder<ConnectionExtensions, Context>(::ConnectionExtensions)
+
     val imageLoader: ImageLoader by lazy {
         ImageLoader(requestQueue,
             object : ImageLoader.ImageCache {
