@@ -7,21 +7,21 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.TextView
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.navigateUp
 import androidx.preference.PreferenceManager
 import com.android.volley.*
 import com.android.volley.toolbox.*
-import com.google.android.material.navigation.NavigationView
 
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var conn: ConnectionExtensions
     private lateinit var prefs: SharedPreferences
     private lateinit var session: String
@@ -30,6 +30,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val host: NavHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return
+
+        // Set up Action Bar / navController
+        val navController = host.navController
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        // This allows NavigationUI to decide what label to show in the action bar
+        // By using appBarConfig, it will also determine whether to
+        // show the up arrow or drawer menu icon
+        setupActionBarWithNavController(navController, appBarConfiguration)
 
         /* Function hook for
          *
@@ -44,9 +55,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setupNavigationMenu(navController: NavController) {
-        val sideNavView = findViewById<NavigationView>(R.id.nav_view)
-        sideNavView?.setupWithNavController(navController)
+    override fun onSupportNavigateUp(): Boolean {
+        // Allows NavigationUI to support proper up navigation or the drawer layout
+        // drawer menu, depending on the situation
+        return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -143,35 +155,6 @@ class MainActivity : AppCompatActivity() {
         conn.addToRequestQueue(jsonObjectRequest)
 
         return true
-    }
-
-
-    fun onActionButtonClick(): String {
-//        val textView = findViewById<TextView>(R.id.text)
-// ...
-
-        var responseText = "None"
-
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(this)
-        val url = "http://www.google.com"
-
-        // Request a string response from the provided URL.
-        val stringRequest = StringRequest(Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                // Display the first 500 characters of the response string.
-//                textView.text = "Response is: ${response.substring(0, 500)}"
-                responseText =  "Response is: ${response.substring(0, 500)}"
-            },
-            Response.ErrorListener {
-//                textView.text = "That didn't work!"
-                responseText = "That didn't work!"
-                })
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest)
-
-        return responseText
     }
 
     fun onActionButtonClickDoTheThings() {

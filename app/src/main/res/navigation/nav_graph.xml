@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/ArticleListFragment"
         android:name="com.example.shiori.ArticleListFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/articlelist_fragment_label"
         tools:layout="@layout/fragment_articlelist">
 
         <action
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/ArticleDetailFragment"
         android:name="com.example.shiori.ArticleDetailFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/articledetail_fragment_label"
         tools:layout="@layout/fragment_articledetail">
 
         <action
