@@ -3,6 +3,7 @@ package com.example.shiori
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -25,7 +26,8 @@ class ArticleDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<Button>(R.id.button_second).setOnClickListener {
-            findNavController().navigate(R.id.action_ArticleDetailFragment_to_ArticleListFragment)
+//            findNavController().navigate(R.id.action_ArticleDetailFragment_to_ArticleListFragment)
+            fragmentManager?.popBackStack()
         }
     }
 }

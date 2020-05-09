@@ -9,10 +9,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.android.volley.*
 import com.android.volley.toolbox.*
+import com.google.android.material.navigation.NavigationView
 
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
@@ -39,6 +42,11 @@ class MainActivity : AppCompatActivity() {
         this.conn = ConnectionExtensions.getInstance(this.applicationContext)
         this.session = doLogin()
 
+    }
+
+    private fun setupNavigationMenu(navController: NavController) {
+        val sideNavView = findViewById<NavigationView>(R.id.nav_view)
+        sideNavView?.setupWithNavController(navController)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
