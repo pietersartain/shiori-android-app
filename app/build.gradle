@@ -51,4 +51,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'androidx.preference:preference:1.1.0'
+    //ktx android
+    implementation 'androidx.fragment:fragment-ktx:1.0.0'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 }
