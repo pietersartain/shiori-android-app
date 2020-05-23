@@ -1,9 +1,7 @@
 package com.example.shiori
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +46,7 @@ class ArticleListFragment : Fragment() {
         api.getBookmarks().observe(viewLifecycleOwner, Observer { item ->
             // Update the UI
             // Access the RecyclerView Adapter and load the data into it
-            recyclerView.adapter = BookmarkAdapter(item, this.context as Context)
+            recyclerView.adapter = ArticleAdapter(item, this.context as Context)
         })
 
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
