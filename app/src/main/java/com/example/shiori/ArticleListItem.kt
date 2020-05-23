@@ -17,7 +17,7 @@ class ArticleListItem(private val myDataset: Array<String>) :
 
         // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(parent: ViewGroup,
-                                        viewType: Int): ArticleListItem.MyViewHolder {
+                                        viewType: Int): MyViewHolder {
             // create a new view
             val textView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.article_list_view, parent, false) as TextView

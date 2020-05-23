@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.animal_list_item.view.*
+import org.json.JSONArray
 
-class AnimalAdapter(val items : ArrayList<String>, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
+class BookmarkAdapter(val items : JSONArray, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
 
     // Gets the number of animals in the list
     override fun getItemCount(): Int {
-        return items.size
+        return items.length()
     }
 
     // Inflates the item views
@@ -22,11 +23,11 @@ class AnimalAdapter(val items : ArrayList<String>, val context: Context) : Recyc
 
     // Binds each animal in the ArrayList to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder?.tvAnimalType?.text = items.get(position)
+        holder.tvTitle.text = items.getJSONObject(position).getString("title")
     }
 }
 
 class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
     // Holds the TextView that will add each animal to
-    val tvAnimalType = view.tv_animal_type
+    val tvTitle: TextView = view.tv_animal_type
 }
