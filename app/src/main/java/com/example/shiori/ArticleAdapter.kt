@@ -47,6 +47,8 @@ class ArticleAdapter(val items : JSONArray, val context: Context) : RecyclerView
             tags.add(tagsArray.getJSONObject(i).getString("name"))
         }
         holder.tvTags.text = tags.joinToString()
+
+        holder.articleId = article.getInt("id")
     }
 }
 
@@ -56,4 +58,8 @@ class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
     val tvTitle: TextView = view.row_title
     val tvExcerpt: TextView = view.row_excerpt
     val tvTags: TextView = view.row_tags
+    var articleId: Int = 0
+
+//    override fun bind() {
+// }
 }
