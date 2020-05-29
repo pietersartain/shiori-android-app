@@ -16,9 +16,9 @@ buildscript {
     }
 }
 
-//plugins {
-//    id "org.jlleitschuh.gradle.ktlint-idea" version "9.2.1"
-//}
+plugins {
+    id "com.diffplug.gradle.spotless" version "4.0.1"
+}
 
 allprojects {
     repositories {
@@ -26,9 +26,8 @@ allprojects {
         jcenter()
         
     }
-//    apply plugin: "org.jlleitschuh.gradle.ktlint"
 }
 
-task clean(type: Delete) {
+task cleanproject(type: Delete) {
     delete rootProject.buildDir
 }
