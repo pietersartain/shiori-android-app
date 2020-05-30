@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +29,9 @@ class ArticleListFragment : Fragment(), OnItemClickListener {
     ): View? {
         api = ViewModelProvider(this.requireActivity()).get(ShioriApiViewModel::class.java)
 
-        api.getSession().observe(viewLifecycleOwner, Observer { api.bookmarkRequest(1) })
+        api.getSession().observe(viewLifecycleOwner, Observer {
+            api.requestBookmarkPage(1)
+        })
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_articlelist, container, false)
@@ -47,27 +48,10 @@ class ArticleListFragment : Fragment(), OnItemClickListener {
             // Access the RecyclerView Adapter and load the data into it
             recyclerView.adapter = ArticleAdapter(item, this.context as Context, this)
         })
-
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController().navigate(R.id.action_ArticleListFragment_to_ArticleDetailFragment)
-        }
-
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this.context)
-
-        view.findViewById<Button>(R.id.button_settings).setOnClickListener {
-            view ->
-
-            Snackbar.make(view,
-//                "Replace with your own action",
-                "Server: ${prefs.getString("server","<unset>")}",
-                Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-//        }
-        }
     }
 
     override fun onItemClicked(article: JSONObject) {
-        Toast.makeText(this.activity,"ArticleId: ${article.getInt("id")}",Toast.LENGTH_LONG)
-            .show()
+        api.setSelectedArticle(article.getInt("id"))
+        findNavController().navigate(R.id.action_ArticleListFragment_to_ArticleDetailFragment)
     }
 }

@@ -5,8 +5,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.webkit.CookieSyncManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         // show the up arrow or drawer menu icon
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        api = ViewModelProviders.of(this).get(ShioriApiViewModel::class.java)
+        api = ViewModelProvider(this).get(ShioriApiViewModel::class.java)
 
         /* Function hook for the email button
          *
@@ -53,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         api.doLogin()
-//        api.getBookmarks(1)
     }
 
     override fun onDestroy() {

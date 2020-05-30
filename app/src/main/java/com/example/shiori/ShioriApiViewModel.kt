@@ -4,18 +4,16 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.webkit.CookieManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.preference.PreferenceManager
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class ShioriApiViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -27,12 +25,26 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
     private val errmsg = MutableLiveData<String>()
     private val bookmarks = MutableLiveData<JSONArray>()
 
+    private val selectedArticle = MutableLiveData<Int>()
+
+    fun getPrefs(): SharedPreferences {
+        return prefs
+    }
+
     fun getSession(): LiveData<String> {
         return session
     }
 
     fun getBookmarks(): LiveData<JSONArray> {
         return bookmarks
+    }
+
+    fun setSelectedArticle(articleId: Int) {
+        selectedArticle.value = articleId
+    }
+
+    fun getSelectedArticle(): LiveData<Int> {
+        return selectedArticle
     }
 
     fun logDebug(msg: String) {
@@ -52,7 +64,7 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
         // Send login request
         val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.POST, logoutUrl, null,
-            Response.Listener<JSONObject> { response ->
+            Response.Listener {
                 // Do something with the response
                 session.postValue("")
             },
@@ -60,7 +72,8 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
                 // Handle error
                 errmsg.value = "Logout error: %s".format(error.toString())
                 logDebug(errmsg.value!!)
-            }) {
+            })
+            {
             override fun getHeaders(): Map<String, String> {
                 // Create HashMap of your Headers as the example provided below
 
@@ -86,8 +99,10 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
         // Send login request
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.POST, loginUrl, body,
-            Response.Listener<JSONObject> { response ->
+            Response.Listener { response ->
                 // Do something with the response
+                CookieManager.getInstance().setCookie(prefs.getString("server","unset"), "session-id=${response.getString("session")}")
+                CookieManager.getInstance().flush()
                 this.session.value = response.getString("session")
             },
             Response.ErrorListener { error ->
@@ -100,15 +115,15 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
         conn.addToRequestQueue(jsonObjectRequest)
     }
 
-    fun bookmarkRequest(page: Int) {
+    fun requestBookmarkPage(page: Int) {
 
-        // Create login URL
+        // Create URL
         val bookmarksUrl = "${prefs.getString("server","<unset>")}/api/bookmarks?page=${page}"
 
         // Send login request
         val jsonObjectRequest = object : JsonObjectRequest(
             Request.Method.GET, bookmarksUrl, null,
-            Response.Listener<JSONObject> { response ->
+            Response.Listener { response ->
                 // Load response into a data object
                bookmarks.value = response.getJSONArray("bookmarks")
             },
@@ -116,7 +131,8 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
                 // Handle error
                 errmsg.value = "Error retrieving bookmark list: %s".format(error.toString())
                 logDebug(errmsg.value!!)
-            }) {
+            })
+        {
             // https://stackoverflow.com/a/54251710
             // Providing Request Headers
 
