@@ -12,7 +12,6 @@ import androidx.preference.PreferenceManager
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import org.json.JSONArray
 import org.json.JSONObject
 
 class ShioriApiViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,7 +22,11 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val session = MutableLiveData<String>()
     private val errmsg = MutableLiveData<String>()
-    private val bookmarks = MutableLiveData<JSONArray>()
+    private val bookmarks = MutableLiveData<ArrayList<Article>>()
+
+    private val bookmarkPages = MutableLiveData<Int>()
+
+    private val requestingBookmarks = MutableLiveData(false)
 
     private val selectedArticle = MutableLiveData<Int>()
 
@@ -35,8 +38,16 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
         return session
     }
 
-    fun getBookmarks(): LiveData<JSONArray> {
+    fun getBookmarks(): LiveData<ArrayList<Article>> {
         return bookmarks
+    }
+
+    fun requestingBookmarks(): LiveData<Boolean> {
+        return requestingBookmarks
+    }
+
+    fun getBookmarkPages(): LiveData<Int> {
+        return bookmarkPages
     }
 
     fun setSelectedArticle(articleId: Int) {
@@ -116,6 +127,7 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun requestBookmarkPage(page: Int) {
+        requestingBookmarks.value = true
 
         // Create URL
         val bookmarksUrl = "${prefs.getString("server","<unset>")}/api/bookmarks?page=${page}"
@@ -125,7 +137,27 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
             Request.Method.GET, bookmarksUrl, null,
             Response.Listener { response ->
                 // Load response into a data object
-               bookmarks.value = response.getJSONArray("bookmarks")
+
+                val bookmarkArray = response.getJSONArray("bookmarks")
+                if (bookmarks.value.isNullOrEmpty()) {
+                    bookmarks.value = ArrayList()
+                }
+
+                for (i in 0 until bookmarkArray.length()) {
+                    val obj = bookmarkArray.getJSONObject(i)
+
+                    val article = Article(
+                        obj.getString("imageURL"),
+                        obj.getString("title"),
+                        obj.getString("excerpt"),
+                        obj.getJSONArray("tags"),
+                        obj.getInt("id")
+                    )
+                    bookmarks.value?.add(article)
+                }
+                bookmarks.postValue(bookmarks.value)
+                bookmarkPages.value = page
+                requestingBookmarks.value = false
             },
             Response.ErrorListener { error ->
                 // Handle error

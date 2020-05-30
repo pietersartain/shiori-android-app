@@ -11,17 +11,15 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.recycler_article_list_item.view.*
-import org.json.JSONArray
-import org.json.JSONObject
 
-class ArticleAdapter(private val items : JSONArray, private val context: Context, private val itemClickListener: OnItemClickListener) :
+class ArticleAdapter(private val items : ArrayList<Article>, private val context: Context, private val itemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<ViewHolder>() {
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
     // Gets the number of articles in the list
     override fun getItemCount(): Int {
-        return items.length()
+        return items.size
     }
 
     // Inflates the item views
@@ -31,7 +29,7 @@ class ArticleAdapter(private val items : JSONArray, private val context: Context
 
     // Binds each article in the ArrayList to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val article = items.getJSONObject(position)
+        val article = items[position]
         holder.bind(article, prefs, itemClickListener)
     }
 }
@@ -42,25 +40,17 @@ class ViewHolder (private val view: View) : RecyclerView.ViewHolder(view) {
     private val tvExcerpt: TextView = view.row_excerpt
     private val tvTags: TextView = view.row_tags
 
-    fun bind(article: JSONObject, prefs: SharedPreferences, clickListener: OnItemClickListener)
+    fun bind(article: Article, prefs: SharedPreferences, clickListener: OnItemClickListener)
     {
         Picasso.get()
-            .load(prefs.getString("server","<unset>")!! + article.getString("imageURL"))
+            .load(prefs.getString("server","<unset>")!! + article.imageUrl)
             .resize(50, 50)
             .centerCrop()
             .into(ivImage)
 
-        tvTitle.text = article.getString("title")
-
-        val excerpt = article.getString("excerpt")
-        tvExcerpt.text = if (excerpt.length > 150) excerpt.take(150) + "..." else excerpt
-
-        val tagsArray = article.getJSONArray("tags")
-        val tags = ArrayList<String>()
-        for (i in 0 until tagsArray.length()) {
-            tags.add(tagsArray.getJSONObject(i).getString("name"))
-        }
-        tvTags.text = tags.joinToString()
+        tvTitle.text = article.title
+        tvExcerpt.text = article.getExcerpt(150)
+        tvTags.text = article.getTagString()
 
         view.setOnClickListener {
             clickListener.onItemClicked(article)
@@ -69,5 +59,5 @@ class ViewHolder (private val view: View) : RecyclerView.ViewHolder(view) {
 }
 
 interface OnItemClickListener{
-    fun onItemClicked(article: JSONObject)
+    fun onItemClicked(article: Article)
 }

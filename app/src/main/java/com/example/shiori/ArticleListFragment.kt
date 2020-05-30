@@ -10,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_articlelist.*
-import org.json.JSONObject
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -48,6 +48,25 @@ class ArticleListFragment : Fragment(), OnItemClickListener {
             // Set the scroll position to the last visible item seen onPause
             (recyclerView.layoutManager as LinearLayoutManager).scrollToPosition(currentVisiblePosition)
         })
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING || newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val loadedPages = api.getBookmarkPages().value
+                    if (loadedPages != null) {
+                        val lastVisibleItem =
+                            (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+
+                        if (!api.requestingBookmarks().value!! && (lastVisibleItem + 5 > loadedPages * 30)) {
+                            api.requestBookmarkPage(loadedPages + 1)
+                            currentVisiblePosition = (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun onPause() {
@@ -55,8 +74,8 @@ class ArticleListFragment : Fragment(), OnItemClickListener {
         currentVisiblePosition = (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
     }
 
-    override fun onItemClicked(article: JSONObject) {
-        api.setSelectedArticle(article.getInt("id"))
+    override fun onItemClicked(article: Article) {
+        api.setSelectedArticle(article.id)
         findNavController().navigate(R.id.action_ArticleListFragment_to_ArticleDetailFragment)
     }
 }
