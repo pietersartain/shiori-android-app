@@ -5,14 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_articlelist.*
 import org.json.JSONObject
 
@@ -22,6 +19,7 @@ import org.json.JSONObject
 class ArticleListFragment : Fragment(), OnItemClickListener {
 
     private lateinit var api: ShioriApiViewModel
+    private var currentVisiblePosition: Int = 0
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +45,14 @@ class ArticleListFragment : Fragment(), OnItemClickListener {
             // Update the UI
             // Access the RecyclerView Adapter and load the data into it
             recyclerView.adapter = ArticleAdapter(item, this.context as Context, this)
+            // Set the scroll position to the last visible item seen onPause
+            (recyclerView.layoutManager as LinearLayoutManager).scrollToPosition(currentVisiblePosition)
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        currentVisiblePosition = (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
     }
 
     override fun onItemClicked(article: JSONObject) {
