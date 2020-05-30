@@ -6,19 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_articlelist.*
+import org.json.JSONObject
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class ArticleListFragment : Fragment() {
+class ArticleListFragment : Fragment(), OnItemClickListener {
 
     private lateinit var api: ShioriApiViewModel
 
@@ -26,7 +28,7 @@ class ArticleListFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        api = this.activity?.let { ViewModelProviders.of(it).get(ShioriApiViewModel::class.java) }!!
+        api = ViewModelProvider(this.requireActivity()).get(ShioriApiViewModel::class.java)
 
         api.getSession().observe(viewLifecycleOwner, Observer { api.bookmarkRequest(1) })
 
@@ -40,13 +42,10 @@ class ArticleListFragment : Fragment() {
         // Creates a vertical Layout Manager
         recyclerView.layoutManager = LinearLayoutManager(this.context)
 
-        // You can use GridLayoutManager if you want multiple columns. Enter the number of columns as a parameter.
-//        rv_animal_list.layoutManager = GridLayoutManager(this, 2)
-
         api.getBookmarks().observe(viewLifecycleOwner, Observer { item ->
             // Update the UI
             // Access the RecyclerView Adapter and load the data into it
-            recyclerView.adapter = ArticleAdapter(item, this.context as Context)
+            recyclerView.adapter = ArticleAdapter(item, this.context as Context, this)
         })
 
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
@@ -67,4 +66,8 @@ class ArticleListFragment : Fragment() {
         }
     }
 
+    override fun onItemClicked(article: JSONObject) {
+        Toast.makeText(this.activity,"ArticleId: ${article.getInt("id")}",Toast.LENGTH_LONG)
+            .show()
+    }
 }

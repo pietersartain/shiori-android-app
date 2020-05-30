@@ -1,6 +1,7 @@
 package com.example.shiori
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.recycler_article_list_item.view.*
 import org.json.JSONArray
+import org.json.JSONObject
 
-class ArticleAdapter(val items : JSONArray, val context: Context) : RecyclerView.Adapter<ViewHolder>() {
+class ArticleAdapter(private val items : JSONArray, private val context: Context, private val itemClickListener: OnItemClickListener) :
+    RecyclerView.Adapter<ViewHolder>() {
 
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -29,37 +32,42 @@ class ArticleAdapter(val items : JSONArray, val context: Context) : RecyclerView
     // Binds each article in the ArrayList to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val article = items.getJSONObject(position)
+        holder.bind(article, prefs, itemClickListener)
+    }
+}
 
+class ViewHolder (private val view: View) : RecyclerView.ViewHolder(view) {
+    private val ivImage: ImageView = view.row_image
+    private val tvTitle: TextView = view.row_title
+    private val tvExcerpt: TextView = view.row_excerpt
+    private val tvTags: TextView = view.row_tags
+
+    fun bind(article: JSONObject, prefs: SharedPreferences, clickListener: OnItemClickListener)
+    {
         Picasso.get()
-            .load(prefs.getString("server","<unset>") + article.getString("imageURL"))
+            .load(prefs.getString("server","<unset>")!! + article.getString("imageURL"))
             .resize(50, 50)
             .centerCrop()
-            .into(holder.ivImage)
+            .into(ivImage)
 
-        holder.tvTitle.text = article.getString("title")
+        tvTitle.text = article.getString("title")
 
         val excerpt = article.getString("excerpt")
-        holder.tvExcerpt.text = if (excerpt.length > 150) excerpt.take(150) + "..." else excerpt
+        tvExcerpt.text = if (excerpt.length > 150) excerpt.take(150) + "..." else excerpt
 
         val tagsArray = article.getJSONArray("tags")
         val tags = ArrayList<String>()
         for (i in 0 until tagsArray.length()) {
             tags.add(tagsArray.getJSONObject(i).getString("name"))
         }
-        holder.tvTags.text = tags.joinToString()
+        tvTags.text = tags.joinToString()
 
-        holder.articleId = article.getInt("id")
+        view.setOnClickListener {
+            clickListener.onItemClicked(article)
+        }
     }
 }
 
-class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-    // Holds the TextView that will add each article to
-    val ivImage: ImageView = view.row_image
-    val tvTitle: TextView = view.row_title
-    val tvExcerpt: TextView = view.row_excerpt
-    val tvTags: TextView = view.row_tags
-    var articleId: Int = 0
-
-//    override fun bind() {
-// }
+interface OnItemClickListener{
+    fun onItemClicked(article: JSONObject)
 }
