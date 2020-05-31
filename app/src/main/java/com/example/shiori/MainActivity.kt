@@ -13,11 +13,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -43,13 +38,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         api = ViewModelProvider(this).get(ShioriApiViewModel::class.java)
-
-        /* Function hook for the email button
-         *
-         */
-        fab.setOnClickListener {
-            {}
-        }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         api.doLogin()
@@ -87,31 +75,4 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    fun onActionButtonClickDoTheThings() {
-
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(this)
-        val url = "https://www.google.com"
-
-        // Request a string response from the provided URL.
-        val stringRequest = StringRequest(Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                // Display the first 500 characters of the response string.
-                Snackbar.make(fab,
-                    "Response is: ${response.substring(0, 500)}",
-                    Snackbar.LENGTH_LONG).setAction("Action", null).show()
-            },
-            Response.ErrorListener {
-                Snackbar.make(fab,
-                    "That didn't work!",
-                    Snackbar.LENGTH_LONG).setAction("Action", null).show()
-            })
-
-// Add the request to the RequestQueue.
-        queue.add(stringRequest)
-
-    }
-
-
 }

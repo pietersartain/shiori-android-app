@@ -23,7 +23,7 @@ class AddBookmarkActivity : AppCompatActivity() {
         val tv = findViewById<View>(R.id.textView) as TextView
         val bookmarkURL = intent.getStringExtra(Intent.EXTRA_TEXT)
 
-        tv.text = "Now adding bookmark ... "
+        tv.text = "Now adding ${bookmarkURL} to bookmarks ..."
 
         api = ViewModelProvider(this).get(ShioriApiViewModel::class.java)
 
@@ -36,7 +36,7 @@ class AddBookmarkActivity : AppCompatActivity() {
 
         api.savingBookmark().observe(this, Observer {
             if (!api.savingBookmark().value!!) {
-                tv.text = "Done! Heading back to where we started ..."
+                tv.text = "Done! Bye!"
                 super.onBackPressed()
             }
         })
