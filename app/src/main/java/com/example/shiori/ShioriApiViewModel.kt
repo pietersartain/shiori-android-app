@@ -21,7 +21,7 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(ctx)
 
     private val session = MutableLiveData<String>()
-    private val errmsg = MutableLiveData<String>()
+    val errmsg = MutableLiveData<String>()
     private val bookmarks = MutableLiveData<ArrayList<Article>>()
 
     private val bookmarkPages = MutableLiveData<Int>()
@@ -29,6 +29,12 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
     private val requestingBookmarks = MutableLiveData(false)
 
     private val selectedArticle = MutableLiveData<Int>()
+
+    private val savingBookmark = MutableLiveData(true)
+
+    fun savingBookmark(): LiveData<Boolean> {
+        return savingBookmark
+    }
 
     fun getPrefs(): SharedPreferences {
         return prefs
@@ -181,4 +187,47 @@ class ShioriApiViewModel(application: Application) : AndroidViewModel(applicatio
         conn.addToRequestQueue(jsonObjectRequest)
     }
 
+    fun saveBookmark(URL: String) {
+        savingBookmark.value = true
+
+        // // Send request via background script
+        // var data = {
+        //     url: tab.url,
+        //     tags: tags,
+        //     html: content.html || "",
+        // }
+
+        // Create URL
+        val bookmarksUrl = "${prefs.getString("server","<unset>")}/api/bookmarks/ext"
+
+        val body = JSONObject("{ url: \"${URL}\"}")
+
+        // Send login request
+        val jsonObjectRequest = object : JsonObjectRequest(
+            Request.Method.POST, bookmarksUrl, body,
+            Response.Listener { _ ->
+                // Load response into a data object
+                savingBookmark.value = false
+            },
+            Response.ErrorListener { error ->
+                // Handle error
+                errmsg.value = "Error saving bookmark: %s".format(error.toString())
+                logDebug(errmsg.value!!)
+            })
+        {
+            // https://stackoverflow.com/a/54251710
+            // Providing Request Headers
+
+            override fun getHeaders(): Map<String, String> {
+                // Create HashMap of your Headers as the example provided below
+
+                val headers = HashMap<String, String>()
+                headers["X-Session-Id"] = session.value!!
+                return headers
+            }
+        }
+
+        // Run request
+        conn.addToRequestQueue(jsonObjectRequest)
+    }
 }
