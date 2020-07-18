@@ -46,7 +46,7 @@ From a feature perspective, there's a couple of things that would be nice but ar
 
 ## Building
 
-I built and deployed to my phone from [Android Studio 3.6.3](https://developer.android.com/studio/, and compiled the project against Android API 29.
+I built and deployed to my phone from [Android Studio 3.6.3](https://developer.android.com/studio/), and compiled the project against Android API 29.
 
 It uses the Volley library to do HTTP calls. It's referenced as a submodule in this project.
 
